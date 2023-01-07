@@ -1,6 +1,10 @@
 # 3js winter project
 
-## Setup
+## project description
+
+escribir aqui lo que queremos hacer para el proyecto
+
+## setup instructions
 
 Download [Node.js](https://nodejs.org/en/download/).
 Run this followed commands:
