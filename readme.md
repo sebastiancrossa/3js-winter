@@ -4,6 +4,8 @@
 
 inspirandonos en el gif de abajo, como proyecto de materia queremos crear una escena 3d con una nave espacial en el espacio, donde como animación se tengan estrellas que esten pasando por las nave, y que la nave se pueda mover arriba y abajo con las teclas.
 
+![](https://github.com/sebastiancrossa/3js-winter/blob/main/assets/flying-animation.gif)
+
 ## setup
 
 Download [Node.js](https://nodejs.org/en/download/).
