@@ -11,28 +11,28 @@ const scene = new THREE.Scene();
 
 // Objects
 const group = new THREE.Group();
-// scene.add(group);
 
-const cube1 = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 1, 1),
-  new THREE.MeshBasicMaterial({ color: 0xff0000 })
+//Array of stars
+const stars = []
+
+//Initial set of stars
+for (let index = 0; index < 200; index++) {
+  const cube = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 1, 1),
+    new THREE.MeshBasicMaterial({ color: 0xffffff })
+  );
+  cube.position.x = Math.floor((Math.random() * 200) - 50)
+  cube.position.y = Math.floor((Math.random() * 150) - 75)
+  stars.push(cube)
+  scene.add(cube)
+}
+
+//Yellow cube in the middle
+const cube = new THREE.Mesh(
+  new THREE.BoxGeometry(20, 20, 20),
+  new THREE.MeshBasicMaterial({ color: 0xffff00 })
 );
-cube1.position.x = -1.5;
-
-const cube2 = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 1, 1),
-  new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-);
-
-const cube3 = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 1, 1),
-  new THREE.MeshBasicMaterial({ color: 0x0000ff })
-);
-cube3.position.x = 1.5;
-
-group.add(cube1);
-group.add(cube2);
-group.add(cube3);
+scene.add(cube)
 
 // Sizes
 const sizes = {
@@ -40,24 +40,10 @@ const sizes = {
   height: 600,
 };
 
-/**
- * Cursor
- * */
-const cursor = {
-  x: 0,
-  y: 0,
-};
-
-window.addEventListener("mousemove", (event) => {
-  cursor.x = event.clientX / sizes.width - 0.5;
-  cursor.y = -(event.clientY / sizes.height - 0.5);
-});
-
 // Camera
 const aspectRatio = sizes.width / sizes.height;
 const camera = new THREE.PerspectiveCamera(75, aspectRatio);
-camera.position.set(0, 0, 10);
-
+camera.position.set(0, 0, 100);
 scene.add(camera);
 
 /**
@@ -73,29 +59,25 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height);
 renderer.render(scene, camera);
 
-const loader = new GLTFLoader();
-loader.load("/models/ship.glb", (gltf) => {
-  gltf.scene.scale.set(0.5, 0.5, 0.5);
-  scene.add(gltf.scene);
-  camera.lookAt(gltf.scene.position);
-});
-
-const clock = new THREE.Clock();
 const tick = () => {
-  const elapsedTime = clock.getElapsedTime();
-
-  // update objects
-  group.rotation.y = Math.sin(elapsedTime * 0.1);
-  group.rotation.x = Math.cos(elapsedTime * 0.1);
-
-  // update camera
-  camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 4;
-  camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 4;
-  camera.position.y = cursor.y * 10;
-  camera.lookAt(group.position);
-
-  // update controls
-  controls.update();
+  //move stars
+  for (let index = 0; index < stars.length; index++) {
+    const star = stars[index];
+    star.position.x = star.position.x - 0.5
+    if (star.position.x < -100) {
+      scene.remove(star)
+      const i = stars.indexOf(star)
+      stars.splice(i, 1)
+      const cube = new THREE.Mesh(
+        new THREE.BoxGeometry(1, 1, 1),
+        new THREE.MeshBasicMaterial({ color: 0xffffff })
+      );
+      cube.position.x = 100
+      cube.position.y = Math.floor((Math.random() * 150) - 75)
+      stars.push(cube)
+      scene.add(cube)
+    }
+  }
 
   // render
   renderer.render(scene, camera);
