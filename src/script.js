@@ -9,36 +9,49 @@ const canvas = document.querySelector("canvas.webgl");
 // Scene
 const scene = new THREE.Scene();
 
-// Objects
-const group = new THREE.Group();
+// Initial stars
+const stars = [];
 
-//Array of stars
-const stars = []
-
-//Initial set of stars
 for (let index = 0; index < 200; index++) {
   const cube = new THREE.Mesh(
     new THREE.BoxGeometry(1, 1, 1),
     new THREE.MeshBasicMaterial({ color: 0xffffff })
   );
-  cube.position.x = Math.floor((Math.random() * 200) - 50)
-  cube.position.y = Math.floor((Math.random() * 150) - 75)
-  stars.push(cube)
-  scene.add(cube)
+
+  cube.position.x = Math.floor(Math.random() * 200 - 50);
+  cube.position.y = Math.floor(Math.random() * 150 - 75);
+  cube.position.z = Math.floor(Math.random() * 150 - 75);
+
+  stars.push(cube);
+  scene.add(cube);
 }
 
-//Yellow cube in the middle
+// yellow ship
 const cube = new THREE.Mesh(
-  new THREE.BoxGeometry(20, 20, 20),
+  new THREE.BoxGeometry(10, 10, 10),
   new THREE.MeshBasicMaterial({ color: 0xffff00 })
 );
-scene.add(cube)
+scene.add(cube);
 
 // Sizes
 const sizes = {
-  width: 800,
-  height: 600,
+  width: window.innerWidth,
+  height: window.innerHeight,
 };
+
+window.addEventListener("resize", () => {
+  // Update sizes
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
+
+  // Update camera
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
+
+  // Update renderer
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
 
 // Camera
 const aspectRatio = sizes.width / sizes.height;
@@ -60,22 +73,27 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.render(scene, camera);
 
 const tick = () => {
-  //move stars
   for (let index = 0; index < stars.length; index++) {
     const star = stars[index];
-    star.position.x = star.position.x - 0.5
+    star.position.x = star.position.x - 0.5;
+
     if (star.position.x < -100) {
-      scene.remove(star)
-      const i = stars.indexOf(star)
-      stars.splice(i, 1)
+      scene.remove(star);
+
+      const i = stars.indexOf(star);
+      stars.splice(i, 1);
+
       const cube = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
         new THREE.MeshBasicMaterial({ color: 0xffffff })
       );
-      cube.position.x = 100
-      cube.position.y = Math.floor((Math.random() * 150) - 75)
-      stars.push(cube)
-      scene.add(cube)
+
+      cube.position.x = 100;
+      cube.position.y = Math.floor(Math.random() * 150 - 75);
+      cube.position.z = Math.floor(Math.random() * 150 - 75);
+
+      stars.push(cube);
+      scene.add(cube);
     }
   }
 
