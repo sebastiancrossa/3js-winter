@@ -1,6 +1,7 @@
 import "./style.css";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { TWEEN } from "three/examples/jsm/libs/tween.module.min.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 // Canvas
@@ -25,13 +26,6 @@ for (let index = 0; index < 200; index++) {
   stars.push(cube);
   scene.add(cube);
 }
-
-// yellow ship
-const cube = new THREE.Mesh(
-  new THREE.BoxGeometry(10, 10, 10),
-  new THREE.MeshBasicMaterial({ color: 0xffff00 })
-);
-// scene.add(cube);
 
 // Sizes
 const sizes = {
@@ -72,13 +66,42 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height);
 renderer.render(scene, camera);
 
+let loadedModel;
+let tween;
 const loader = new GLTFLoader();
+
 loader.load("/models/ship.glb", (gltf) => {
+  loadedModel = gltf;
+
   gltf.scene.scale.set(6, 6, 6);
   gltf.scene.rotation.y = Math.PI / 2;
 
   scene.add(gltf.scene);
   camera.lookAt(gltf.scene.position);
+});
+
+document.addEventListener("keydown", (event) => {
+  const keyName = event.key;
+
+  if (keyName === "ArrowUp") {
+    if (tween) tween.stop();
+
+    tween = new TWEEN.Tween()
+      .easing(TWEEN.Easing.Quadratic.Out)
+      .onUpdate(() => {
+        loadedModel.scene.position.y += 0.2;
+      })
+      .start();
+  } else if (keyName === "ArrowDown") {
+    if (tween) tween.stop();
+
+    tween = new TWEEN.Tween()
+      .easing(TWEEN.Easing.Quadratic.Out)
+      .onUpdate(() => {
+        loadedModel.scene.position.y -= 0.2;
+      })
+      .start();
+  }
 });
 
 const tick = () => {
@@ -105,6 +128,12 @@ const tick = () => {
       scene.add(cube);
     }
   }
+
+  // Update controls
+  controls.update();
+
+  // Update tween
+  TWEEN.update();
 
   // render
   renderer.render(scene, camera);
