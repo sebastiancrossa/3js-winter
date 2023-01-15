@@ -31,7 +31,7 @@ const cube = new THREE.Mesh(
   new THREE.BoxGeometry(10, 10, 10),
   new THREE.MeshBasicMaterial({ color: 0xffff00 })
 );
-scene.add(cube);
+// scene.add(cube);
 
 // Sizes
 const sizes = {
@@ -72,10 +72,19 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height);
 renderer.render(scene, camera);
 
+const loader = new GLTFLoader();
+loader.load("/models/ship.glb", (gltf) => {
+  gltf.scene.scale.set(6, 6, 6);
+  gltf.scene.rotation.y = Math.PI / 2;
+
+  scene.add(gltf.scene);
+  camera.lookAt(gltf.scene.position);
+});
+
 const tick = () => {
   for (let index = 0; index < stars.length; index++) {
     const star = stars[index];
-    star.position.x = star.position.x - 0.5;
+    star.position.x = star.position.x - 0.9;
 
     if (star.position.x < -100) {
       scene.remove(star);
