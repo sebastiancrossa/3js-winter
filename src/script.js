@@ -74,6 +74,7 @@ loader.load("/models/ship.glb", (gltf) => {
   loadedModel = gltf;
 
   gltf.scene.scale.set(6, 6, 6);
+  gltf.scene.rotation.reorder("YXZ");
   gltf.scene.rotation.y = Math.PI / 2;
 
   scene.add(gltf.scene);
@@ -90,6 +91,7 @@ document.addEventListener("keydown", (event) => {
       .easing(TWEEN.Easing.Quadratic.Out)
       .onUpdate(() => {
         loadedModel.scene.position.y += 0.2;
+        loadedModel.scene.rotation.x -= 0.001;
       })
       .start();
   } else if (keyName === "ArrowDown") {
@@ -99,9 +101,22 @@ document.addEventListener("keydown", (event) => {
       .easing(TWEEN.Easing.Quadratic.Out)
       .onUpdate(() => {
         loadedModel.scene.position.y -= 0.2;
+        loadedModel.scene.rotation.x += 0.001;
       })
       .start();
   }
+});
+
+// stop tween on keyup
+document.addEventListener("keyup", (event) => {
+  if (tween) tween.stop();
+
+  tween = new TWEEN.Tween()
+    .easing(TWEEN.Easing.Quadratic.Out)
+    .onUpdate(() => {
+      loadedModel.scene.rotation.x = 0;
+    })
+    .start();
 });
 
 const tick = () => {
