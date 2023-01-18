@@ -91,7 +91,7 @@ document.addEventListener("keydown", (event) => {
       .easing(TWEEN.Easing.Quadratic.Out)
       .onUpdate(() => {
         loadedModel.scene.position.y += 0.2;
-        loadedModel.scene.rotation.x -= 0.001;
+        // loadedModel.scene.rotation.x -= 0.001;
       })
       .start();
   } else if (keyName === "ArrowDown") {
@@ -101,7 +101,7 @@ document.addEventListener("keydown", (event) => {
       .easing(TWEEN.Easing.Quadratic.Out)
       .onUpdate(() => {
         loadedModel.scene.position.y -= 0.2;
-        loadedModel.scene.rotation.x += 0.001;
+        // loadedModel.scene.rotation.x += 0.001;
       })
       .start();
   }
@@ -118,6 +118,9 @@ document.addEventListener("keyup", (event) => {
     })
     .start();
 });
+
+// initiate clock
+const clock = new THREE.Clock();
 
 const tick = () => {
   for (let index = 0; index < stars.length; index++) {
@@ -144,11 +147,19 @@ const tick = () => {
     }
   }
 
+  if (loadedModel) {
+    loadedModel.scene.rotation.x = Math.sin(clock.getElapsedTime() * 1.3) * 0.1;
+    loadedModel.scene.rotation.z = Math.sin(clock.getElapsedTime() * 1.3) * 0.3;
+  }
+
   // Update controls
   controls.update();
 
   // Update tween
   TWEEN.update();
+
+  // Update mixer
+  // mixer.update(elapsedTime);
 
   // render
   renderer.render(scene, camera);
