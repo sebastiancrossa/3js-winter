@@ -11,8 +11,8 @@ const canvas = document.querySelector("canvas.webgl");
 const scene = new THREE.Scene();
 
 // Ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
-scene.add(ambientLight);
+// const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+// scene.add(ambientLight);
 
 // Initial stars
 const stars = [];
@@ -25,7 +25,7 @@ for (let index = 0; index < 200; index++) {
       color: 0xffffff,
       emissive: 0xffffff,
       specular: 0xffffff,
-      shininess: 100,
+      shininess: 10,
     })
   );
 
@@ -33,8 +33,8 @@ for (let index = 0; index < 200; index++) {
   cube.position.y = Math.floor(Math.random() * 150 - 75);
   cube.position.z = Math.floor(Math.random() * 150 - 75);
 
-  const pointLight = new THREE.PointLight(0xffffff, 5, 300);
-  pointLight.position.set(cube.position.x, cube.position.y, cube.position.z);
+  const pointLight = new THREE.PointLight(0xffffff, 1000, 1000);
+  pointLight.position.set(0, 0, 0);
   cube.add(pointLight);
 
   stars.push(cube);
@@ -86,6 +86,7 @@ renderer.render(scene, camera);
 let loadedModel;
 let tween;
 const loader = new GLTFLoader();
+let isKeyDown = false;
 
 loader.load("/models/ship.glb", (gltf) => {
   loadedModel = gltf;
@@ -100,6 +101,7 @@ loader.load("/models/ship.glb", (gltf) => {
 
 document.addEventListener("keydown", (event) => {
   const keyName = event.key;
+  isKeyDown = true;
 
   if (keyName === "ArrowUp") {
     if (tween) tween.stop();
@@ -108,7 +110,7 @@ document.addEventListener("keydown", (event) => {
       .easing(TWEEN.Easing.Quadratic.Out)
       .onUpdate(() => {
         loadedModel.scene.position.y += 0.3;
-        // loadedModel.scene.rotation.x -= 0.001;
+        loadedModel.scene.rotation.x -= 0.001;
       })
       .start();
   } else if (keyName === "ArrowDown") {
@@ -118,7 +120,7 @@ document.addEventListener("keydown", (event) => {
       .easing(TWEEN.Easing.Quadratic.Out)
       .onUpdate(() => {
         loadedModel.scene.position.y -= 0.3;
-        // loadedModel.scene.rotation.x += 0.001;
+        loadedModel.scene.rotation.x += 0.001;
       })
       .start();
   }
@@ -127,6 +129,7 @@ document.addEventListener("keydown", (event) => {
 // stop tween on keyup
 document.addEventListener("keyup", (event) => {
   if (tween) tween.stop();
+  isKeyDown = false;
 
   tween = new TWEEN.Tween()
     .easing(TWEEN.Easing.Quadratic.Out)
@@ -136,13 +139,12 @@ document.addEventListener("keyup", (event) => {
     .start();
 });
 
-// initiate clock
 const clock = new THREE.Clock();
 
 const tick = () => {
   for (let index = 0; index < stars.length; index++) {
     const star = stars[index];
-    // star.position.x = star.position.x - 0.9;
+    star.position.x = star.position.x - 0.9;
 
     if (star.position.x < -100) {
       scene.remove(star);
@@ -152,24 +154,29 @@ const tick = () => {
 
       const cube = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshBasicMaterial({ color: 0xffffff })
+        // new THREE.MeshBasicMaterial({ color: 0xffffff })
+        new THREE.MeshPhongMaterial({
+          color: 0xffffff,
+          emissive: 0xffffff,
+          specular: 0xffffff,
+          shininess: 10,
+        })
       );
 
-      // add lighting to the star
-      const light = new THREE.PointLight(0xffffff, 1, 100);
-      light.position.set(0, 0, 0);
-      cube.add(light);
+      cube.position.x = 100;
+      cube.position.y = Math.floor(Math.random() * 150 - 75);
+      cube.position.z = Math.floor(Math.random() * 150 - 75);
 
-      // cube.position.x = 100;
-      // cube.position.y = Math.floor(Math.random() * 150 - 75);
-      // cube.position.z = Math.floor(Math.random() * 150 - 75);
+      const pointLight = new THREE.PointLight(0xffffff, 1000, 1000);
+      pointLight.position.set(0, 0, 0);
+      cube.add(pointLight);
 
       stars.push(cube);
       scene.add(cube);
     }
   }
 
-  if (loadedModel) {
+  if (loadedModel && !isKeyDown) {
     loadedModel.scene.rotation.x = Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
     loadedModel.scene.rotation.z = Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
   }
