@@ -33,9 +33,9 @@ for (let index = 0; index < 200; index++) {
   cube.position.y = Math.floor(Math.random() * 150 - 75);
   cube.position.z = Math.floor(Math.random() * 150 - 75);
 
-  const pointLight = new THREE.PointLight(0xffffff, 1000, 1000);
-  pointLight.position.set(0, 0, 0);
-  cube.add(pointLight);
+  // const pointLight = new THREE.PointLight(0xffffff, 10, 100);
+  // pointLight.position.set(0, 0, 0);
+  // cube.add(pointLight);
 
   stars.push(cube);
   scene.add(cube);
@@ -80,7 +80,7 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ReinhardToneMapping;
+// renderer.toneMapping = THREE.ReinhardToneMapping;
 renderer.render(scene, camera);
 
 let loadedModel;
@@ -165,11 +165,11 @@ const tick = () => {
 
       cube.position.x = 100;
       cube.position.y = Math.floor(Math.random() * 150 - 75);
-      cube.position.z = Math.floor(Math.random() * 150 - 75);
+      cube.position.z = Math.floor(Math.random() * 200 - 75);
 
-      const pointLight = new THREE.PointLight(0xffffff, 1000, 1000);
-      pointLight.position.set(0, 0, 0);
-      cube.add(pointLight);
+      // const pointLight = new THREE.PointLight(0xffffff, 10, 100);
+      // pointLight.position.set(0, 0, 0);
+      // cube.add(pointLight);
 
       stars.push(cube);
       scene.add(cube);
