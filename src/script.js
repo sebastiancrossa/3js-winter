@@ -10,18 +10,32 @@ const canvas = document.querySelector("canvas.webgl");
 // Scene
 const scene = new THREE.Scene();
 
+// Ambient light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+scene.add(ambientLight);
+
 // Initial stars
 const stars = [];
 
 for (let index = 0; index < 200; index++) {
   const cube = new THREE.Mesh(
     new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial({ color: 0xffffff })
+    // new THREE.MeshBasicMaterial({ color: 0xffffff })
+    new THREE.MeshPhongMaterial({
+      color: 0xffffff,
+      emissive: 0xffffff,
+      specular: 0xffffff,
+      shininess: 100,
+    })
   );
 
   cube.position.x = Math.floor(Math.random() * 200 - 50);
   cube.position.y = Math.floor(Math.random() * 150 - 75);
   cube.position.z = Math.floor(Math.random() * 150 - 75);
+
+  const pointLight = new THREE.PointLight(0xffffff, 5, 300);
+  pointLight.position.set(cube.position.x, cube.position.y, cube.position.z);
+  cube.add(pointLight);
 
   stars.push(cube);
   scene.add(cube);
@@ -64,6 +78,9 @@ const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
 renderer.setSize(sizes.width, sizes.height);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ReinhardToneMapping;
 renderer.render(scene, camera);
 
 let loadedModel;
@@ -90,7 +107,7 @@ document.addEventListener("keydown", (event) => {
     tween = new TWEEN.Tween()
       .easing(TWEEN.Easing.Quadratic.Out)
       .onUpdate(() => {
-        loadedModel.scene.position.y += 0.2;
+        loadedModel.scene.position.y += 0.3;
         // loadedModel.scene.rotation.x -= 0.001;
       })
       .start();
@@ -100,7 +117,7 @@ document.addEventListener("keydown", (event) => {
     tween = new TWEEN.Tween()
       .easing(TWEEN.Easing.Quadratic.Out)
       .onUpdate(() => {
-        loadedModel.scene.position.y -= 0.2;
+        loadedModel.scene.position.y -= 0.3;
         // loadedModel.scene.rotation.x += 0.001;
       })
       .start();
@@ -125,7 +142,7 @@ const clock = new THREE.Clock();
 const tick = () => {
   for (let index = 0; index < stars.length; index++) {
     const star = stars[index];
-    star.position.x = star.position.x - 0.9;
+    // star.position.x = star.position.x - 0.9;
 
     if (star.position.x < -100) {
       scene.remove(star);
@@ -138,9 +155,14 @@ const tick = () => {
         new THREE.MeshBasicMaterial({ color: 0xffffff })
       );
 
-      cube.position.x = 100;
-      cube.position.y = Math.floor(Math.random() * 150 - 75);
-      cube.position.z = Math.floor(Math.random() * 150 - 75);
+      // add lighting to the star
+      const light = new THREE.PointLight(0xffffff, 1, 100);
+      light.position.set(0, 0, 0);
+      cube.add(light);
+
+      // cube.position.x = 100;
+      // cube.position.y = Math.floor(Math.random() * 150 - 75);
+      // cube.position.z = Math.floor(Math.random() * 150 - 75);
 
       stars.push(cube);
       scene.add(cube);
@@ -148,8 +170,8 @@ const tick = () => {
   }
 
   if (loadedModel) {
-    loadedModel.scene.rotation.x = Math.sin(clock.getElapsedTime() * 1.3) * 0.1;
-    loadedModel.scene.rotation.z = Math.sin(clock.getElapsedTime() * 1.3) * 0.3;
+    loadedModel.scene.rotation.x = Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
+    loadedModel.scene.rotation.z = Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
   }
 
   // Update controls
