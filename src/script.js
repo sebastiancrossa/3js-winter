@@ -10,18 +10,32 @@ const canvas = document.querySelector("canvas.webgl");
 // Scene
 const scene = new THREE.Scene();
 
+// Ambient light
+// const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+// scene.add(ambientLight);
+
 // Initial stars
 const stars = [];
 
 for (let index = 0; index < 200; index++) {
   const cube = new THREE.Mesh(
     new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial({ color: 0xffffff })
+    // new THREE.MeshBasicMaterial({ color: 0xffffff })
+    new THREE.MeshPhongMaterial({
+      color: 0xffffff,
+      emissive: 0xffffff,
+      specular: 0xffffff,
+      shininess: 10,
+    })
   );
 
   cube.position.x = Math.floor(Math.random() * 200 - 50);
   cube.position.y = Math.floor(Math.random() * 150 - 75);
   cube.position.z = Math.floor(Math.random() * 150 - 75);
+
+  // const pointLight = new THREE.PointLight(0xffffff, 10, 100);
+  // pointLight.position.set(0, 0, 0);
+  // cube.add(pointLight);
 
   stars.push(cube);
   scene.add(cube);
@@ -64,16 +78,21 @@ const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
 renderer.setSize(sizes.width, sizes.height);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+// renderer.toneMapping = THREE.ReinhardToneMapping;
 renderer.render(scene, camera);
 
 let loadedModel;
 let tween;
 const loader = new GLTFLoader();
+let isKeyDown = false;
 
 loader.load("/models/ship.glb", (gltf) => {
   loadedModel = gltf;
 
   gltf.scene.scale.set(6, 6, 6);
+  gltf.scene.rotation.reorder("YXZ");
   gltf.scene.rotation.y = Math.PI / 2;
 
   scene.add(gltf.scene);
@@ -82,6 +101,7 @@ loader.load("/models/ship.glb", (gltf) => {
 
 document.addEventListener("keydown", (event) => {
   const keyName = event.key;
+  isKeyDown = true;
 
   if (keyName === "ArrowUp") {
     if (tween) tween.stop();
@@ -89,7 +109,8 @@ document.addEventListener("keydown", (event) => {
     tween = new TWEEN.Tween()
       .easing(TWEEN.Easing.Quadratic.Out)
       .onUpdate(() => {
-        loadedModel.scene.position.y += 0.2;
+        loadedModel.scene.position.y += 0.3;
+        loadedModel.scene.rotation.x -= 0.001;
       })
       .start();
   } else if (keyName === "ArrowDown") {
@@ -98,11 +119,27 @@ document.addEventListener("keydown", (event) => {
     tween = new TWEEN.Tween()
       .easing(TWEEN.Easing.Quadratic.Out)
       .onUpdate(() => {
-        loadedModel.scene.position.y -= 0.2;
+        loadedModel.scene.position.y -= 0.3;
+        loadedModel.scene.rotation.x += 0.001;
       })
       .start();
   }
 });
+
+// stop tween on keyup
+document.addEventListener("keyup", (event) => {
+  if (tween) tween.stop();
+  isKeyDown = false;
+
+  tween = new TWEEN.Tween()
+    .easing(TWEEN.Easing.Quadratic.Out)
+    .onUpdate(() => {
+      loadedModel.scene.rotation.x = 0;
+    })
+    .start();
+});
+
+const clock = new THREE.Clock();
 
 const tick = () => {
   for (let index = 0; index < stars.length; index++) {
@@ -117,16 +154,31 @@ const tick = () => {
 
       const cube = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshBasicMaterial({ color: 0xffffff })
+        // new THREE.MeshBasicMaterial({ color: 0xffffff })
+        new THREE.MeshPhongMaterial({
+          color: 0xffffff,
+          emissive: 0xffffff,
+          specular: 0xffffff,
+          shininess: 10,
+        })
       );
 
       cube.position.x = 100;
       cube.position.y = Math.floor(Math.random() * 150 - 75);
-      cube.position.z = Math.floor(Math.random() * 150 - 75);
+      cube.position.z = Math.floor(Math.random() * 200 - 75);
+
+      // const pointLight = new THREE.PointLight(0xffffff, 10, 100);
+      // pointLight.position.set(0, 0, 0);
+      // cube.add(pointLight);
 
       stars.push(cube);
       scene.add(cube);
     }
+  }
+
+  if (loadedModel && !isKeyDown) {
+    loadedModel.scene.rotation.x = Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
+    loadedModel.scene.rotation.z = Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
   }
 
   // Update controls
@@ -134,6 +186,9 @@ const tick = () => {
 
   // Update tween
   TWEEN.update();
+
+  // Update mixer
+  // mixer.update(elapsedTime);
 
   // render
   renderer.render(scene, camera);
