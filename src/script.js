@@ -154,7 +154,6 @@ const tick = () => {
 
       const cube = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
-        // new THREE.MeshBasicMaterial({ color: 0xffffff })
         new THREE.MeshPhongMaterial({
           color: 0xffffff,
           emissive: 0xffffff,
@@ -163,22 +162,28 @@ const tick = () => {
         })
       );
 
-      cube.position.x = 100;
-      cube.position.y = Math.floor(Math.random() * 150 - 75);
-      cube.position.z = Math.floor(Math.random() * 200 - 75);
-
-      // const pointLight = new THREE.PointLight(0xffffff, 10, 100);
-      // pointLight.position.set(0, 0, 0);
-      // cube.add(pointLight);
+      cube.position.x =
+        loadedModel.scene.position.x + Math.floor(Math.random() * 200 + 50);
+      cube.position.y =
+        loadedModel.scene.position.y + Math.floor(Math.random() * 150 - 75);
+      cube.position.z =
+        loadedModel.scene.position.z + Math.floor(Math.random() * 150 - 75);
 
       stars.push(cube);
       scene.add(cube);
     }
   }
 
-  if (loadedModel && !isKeyDown) {
-    loadedModel.scene.rotation.x = Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
-    loadedModel.scene.rotation.z = Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
+  if (loadedModel) {
+    if (!isKeyDown) {
+      loadedModel.scene.rotation.x =
+        Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
+      loadedModel.scene.rotation.z =
+        Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
+    }
+
+    camera.position.x = loadedModel.scene.position.x + 90;
+    camera.position.y = loadedModel.scene.position.y;
   }
 
   // Update controls
@@ -186,9 +191,6 @@ const tick = () => {
 
   // Update tween
   TWEEN.update();
-
-  // Update mixer
-  // mixer.update(elapsedTime);
 
   // render
   renderer.render(scene, camera);
