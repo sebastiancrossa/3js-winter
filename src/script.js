@@ -71,10 +71,9 @@ scene.add(camera);
  * */
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
-controls.noPan = true;
-controls.noKeys = true;
-controls.noRotate = true;
-controls.noZoom = true;
+controls.enablePan = false;
+controls.enableRotate = false;
+controls.enableZoom = false;
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
@@ -94,11 +93,11 @@ const cameraOffset = new THREE.Vector3(50.0, 20.0, 80.0);
 
 loader.load("/models/ship.glb", (gltf) => {
   loadedModel = gltf;
-  
+
   gltf.scene.scale.set(6, 6, 6);
   gltf.scene.rotation.reorder("YXZ");
   gltf.scene.rotation.y = Math.PI / 2;
-  
+
   scene.add(gltf.scene);
   camera.position.copy(gltf.scene.position).add(cameraOffset);
   camera.lookAt(gltf.scene.position);
@@ -116,7 +115,7 @@ document.addEventListener("keydown", (event) => {
       .onUpdate(() => {
         loadedModel.scene.position.y += 0.3;
         camera.position.y += 0.3;
-        camera.lookAt(loadedModel.scene.position)
+        camera.lookAt(loadedModel.scene.position);
         loadedModel.scene.rotation.x -= 0.001;
       })
       .start();
@@ -128,7 +127,7 @@ document.addEventListener("keydown", (event) => {
       .onUpdate(() => {
         loadedModel.scene.position.y -= 0.3;
         camera.position.y -= 0.3;
-        camera.lookAt(loadedModel.scene.position)
+        camera.lookAt(loadedModel.scene.position);
         loadedModel.scene.rotation.x += 0.001;
       })
       .start();
@@ -144,8 +143,8 @@ document.addEventListener("keyup", (event) => {
     .easing(TWEEN.Easing.Quadratic.Out)
     .onUpdate(() => {
       loadedModel.scene.rotation.x = 0;
-      camera.position.copy(loadedModel.scene.position).add(cameraOffset)
-      camera.lookAt(loadedModel.scene.position)
+      camera.position.copy(loadedModel.scene.position).add(cameraOffset);
+      camera.lookAt(loadedModel.scene.position);
     })
     .start();
 });
@@ -153,10 +152,9 @@ document.addEventListener("keyup", (event) => {
 const clock = new THREE.Clock();
 
 const tick = () => {
-
   for (let index = 0; index < stars.length; index++) {
     const star = stars[index];
-    star.position.x = star.position.x - 0.9;
+    star.position.x = star.position.x - 2;
 
     if (star.position.x < -300) {
       scene.remove(star);
@@ -174,8 +172,7 @@ const tick = () => {
         })
       );
 
-      cube.position.x =
-        loadedModel.scene.position.x + 300;
+      cube.position.x = loadedModel.scene.position.x + 300;
       cube.position.y =
         loadedModel.scene.position.y + Math.floor(Math.random() * 600 - 250);
       cube.position.z =
