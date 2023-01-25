@@ -72,6 +72,10 @@ scene.add(camera);
  * */
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
+controls.noPan = true;
+controls.noKeys = true;
+controls.noRotate = true;
+controls.noZoom = true;
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
