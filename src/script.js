@@ -17,10 +17,9 @@ const scene = new THREE.Scene();
 // Initial stars
 const stars = [];
 
-for (let index = 0; index < 200; index++) {
+for (let index = 0; index < 800; index++) {
   const cube = new THREE.Mesh(
     new THREE.BoxGeometry(1, 1, 1),
-    // new THREE.MeshBasicMaterial({ color: 0xffffff })
     new THREE.MeshPhongMaterial({
       color: 0xffffff,
       emissive: 0xffffff,
@@ -29,9 +28,9 @@ for (let index = 0; index < 200; index++) {
     })
   );
 
-  cube.position.x = Math.floor(Math.random() * 200 - 50);
-  cube.position.y = Math.floor(Math.random() * 150 - 75);
-  cube.position.z = Math.floor(Math.random() * 150 - 75);
+  cube.position.x = Math.floor(Math.random() * 600);
+  cube.position.y = Math.floor(Math.random() * 600 - 250);
+  cube.position.z = Math.floor(Math.random() * 600 - 250);
 
   // const pointLight = new THREE.PointLight(0xffffff, 10, 100);
   // pointLight.position.set(0, 0, 0);
@@ -87,15 +86,17 @@ let loadedModel;
 let tween;
 const loader = new GLTFLoader();
 let isKeyDown = false;
+const cameraOffset = new THREE.Vector3(50.0, 20.0, 80.0);
 
 loader.load("/models/ship.glb", (gltf) => {
   loadedModel = gltf;
-
+  
   gltf.scene.scale.set(6, 6, 6);
   gltf.scene.rotation.reorder("YXZ");
   gltf.scene.rotation.y = Math.PI / 2;
-
+  
   scene.add(gltf.scene);
+  camera.position.copy(gltf.scene.position).add(cameraOffset);
   camera.lookAt(gltf.scene.position);
 });
 
@@ -110,6 +111,8 @@ document.addEventListener("keydown", (event) => {
       .easing(TWEEN.Easing.Quadratic.Out)
       .onUpdate(() => {
         loadedModel.scene.position.y += 0.3;
+        camera.position.y += 0.3;
+        camera.lookAt(loadedModel.scene.position)
         loadedModel.scene.rotation.x -= 0.001;
       })
       .start();
@@ -120,6 +123,8 @@ document.addEventListener("keydown", (event) => {
       .easing(TWEEN.Easing.Quadratic.Out)
       .onUpdate(() => {
         loadedModel.scene.position.y -= 0.3;
+        camera.position.y -= 0.3;
+        camera.lookAt(loadedModel.scene.position)
         loadedModel.scene.rotation.x += 0.001;
       })
       .start();
@@ -135,6 +140,8 @@ document.addEventListener("keyup", (event) => {
     .easing(TWEEN.Easing.Quadratic.Out)
     .onUpdate(() => {
       loadedModel.scene.rotation.x = 0;
+      camera.position.copy(loadedModel.scene.position).add(cameraOffset)
+      camera.lookAt(loadedModel.scene.position)
     })
     .start();
 });
@@ -142,11 +149,12 @@ document.addEventListener("keyup", (event) => {
 const clock = new THREE.Clock();
 
 const tick = () => {
+
   for (let index = 0; index < stars.length; index++) {
     const star = stars[index];
     star.position.x = star.position.x - 0.9;
 
-    if (star.position.x < -100) {
+    if (star.position.x < -300) {
       scene.remove(star);
 
       const i = stars.indexOf(star);
@@ -163,11 +171,11 @@ const tick = () => {
       );
 
       cube.position.x =
-        loadedModel.scene.position.x + Math.floor(Math.random() * 200 + 50);
+        loadedModel.scene.position.x + 300;
       cube.position.y =
-        loadedModel.scene.position.y + Math.floor(Math.random() * 150 - 75);
+        loadedModel.scene.position.y + Math.floor(Math.random() * 600 - 250);
       cube.position.z =
-        loadedModel.scene.position.z + Math.floor(Math.random() * 150 - 75);
+        loadedModel.scene.position.z + Math.floor(Math.random() * 600 - 250);
 
       stars.push(cube);
       scene.add(cube);
@@ -181,9 +189,6 @@ const tick = () => {
       loadedModel.scene.rotation.z =
         Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
     }
-
-    camera.position.x = loadedModel.scene.position.x + 90;
-    camera.position.y = loadedModel.scene.position.y;
   }
 
   // Update controls
