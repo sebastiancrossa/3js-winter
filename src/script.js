@@ -10,10 +10,6 @@ const canvas = document.querySelector("canvas.webgl");
 // Scene
 const scene = new THREE.Scene();
 
-// Ambient light
-// const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
-// scene.add(ambientLight);
-
 // Initial stars
 const stars = [];
 
@@ -31,10 +27,6 @@ for (let index = 0; index < 800; index++) {
   cube.position.x = Math.floor(Math.random() * 600);
   cube.position.y = Math.floor(Math.random() * 600 - 250);
   cube.position.z = Math.floor(Math.random() * 600 - 250);
-
-  // const pointLight = new THREE.PointLight(0xffffff, 10, 100);
-  // pointLight.position.set(0, 0, 0);
-  // cube.add(pointLight);
 
   stars.push(cube);
   scene.add(cube);
@@ -71,9 +63,9 @@ scene.add(camera);
  * */
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
-controls.enablePan = false;
-controls.enableRotate = false;
-controls.enableZoom = false;
+// controls.enablePan = false;
+// controls.enableRotate = false;
+// controls.enableZoom = false;
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
@@ -135,11 +127,12 @@ document.addEventListener("keydown", (event) => {
 });
 
 // stop tween on keyup
-document.addEventListener("keyup", (event) => {
+document.addEventListener("keyup", () => {
   if (tween) tween.stop();
   isKeyDown = false;
 
   tween = new TWEEN.Tween()
+    .duration(10000000)
     .easing(TWEEN.Easing.Quadratic.Out)
     .onUpdate(() => {
       loadedModel.scene.rotation.x = 0;
@@ -183,15 +176,6 @@ const tick = () => {
     }
   }
 
-  if (loadedModel) {
-    if (!isKeyDown) {
-      loadedModel.scene.rotation.x =
-        Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
-      loadedModel.scene.rotation.z =
-        Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
-    }
-  }
-
   // Update controls
   controls.update();
 
@@ -200,6 +184,15 @@ const tick = () => {
 
   // render
   renderer.render(scene, camera);
+
+  if (loadedModel) {
+    if (!isKeyDown) {
+      loadedModel.scene.rotation.x =
+        Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
+      loadedModel.scene.rotation.z =
+        Math.sin(clock.getElapsedTime() * 1.1) * 0.1;
+    }
+  }
 
   // call tick again on the next frame
   window.requestAnimationFrame(tick);
