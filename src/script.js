@@ -63,9 +63,9 @@ scene.add(camera);
  * */
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
-// controls.enablePan = false;
-// controls.enableRotate = false;
-// controls.enableZoom = false;
+controls.enablePan = false;
+controls.enableRotate = false;
+controls.enableZoom = false;
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
@@ -74,7 +74,7 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-// renderer.toneMapping = THREE.ReinhardToneMapping;
+renderer.toneMapping = THREE.ReinhardToneMapping;
 renderer.render(scene, camera);
 
 let loadedModel;
@@ -89,6 +89,11 @@ loader.load("/models/ship.glb", (gltf) => {
   gltf.scene.scale.set(6, 6, 6);
   gltf.scene.rotation.reorder("YXZ");
   gltf.scene.rotation.y = Math.PI / 2;
+
+  // add lighting to model
+  const light = new THREE.PointLight(0xff0000, 10, 200);
+  light.position.copy(gltf.scene.position).add(new THREE.Vector3(0, 0, 20));
+  gltf.scene.add(light);
 
   scene.add(gltf.scene);
   camera.position.copy(gltf.scene.position).add(cameraOffset);
