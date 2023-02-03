@@ -99,7 +99,7 @@ loader.load("/models/ship.glb", (gltf) => {
   });
 
   // create a point light and position it close to the ship
-  const pointLight = new THREE.PointLight(0xfff000, 10, 0);
+  const pointLight = new THREE.PointLight(0xffea00, 10, 0);
   pointLight.position
     .copy(gltf.scene.position)
     .add(new THREE.Vector3(10, 10, 10));
