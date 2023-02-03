@@ -90,10 +90,22 @@ loader.load("/models/ship.glb", (gltf) => {
   gltf.scene.rotation.reorder("YXZ");
   gltf.scene.rotation.y = Math.PI / 2;
 
-  // add lighting to model
-  const light = new THREE.PointLight(0xff0000, 10, 200);
-  light.position.copy(gltf.scene.position).add(new THREE.Vector3(0, 0, 20));
-  gltf.scene.add(light);
+  // receive shadows
+  gltf.scene.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+    }
+  });
+
+  // create a point light and position it close to the ship
+  const pointLight = new THREE.PointLight(0xfff000, 10, 0);
+  pointLight.position
+    .copy(gltf.scene.position)
+    .add(new THREE.Vector3(10, 10, 10));
+
+  // add the point light to the scene
+  scene.add(pointLight);
 
   scene.add(gltf.scene);
   camera.position.copy(gltf.scene.position).add(cameraOffset);
