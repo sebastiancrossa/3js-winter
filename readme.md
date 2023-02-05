@@ -1,5 +1,7 @@
 # 3js - proyecto de invierno
 
+documento final: https://docs.google.com/document/d/11WJ5YoLh-IIbfzfuORkPKRi7RmvrNeAwEXYTSYwa69U/edit
+
 ## descripcion
 
 inspirandonos en el gif de abajo, como proyecto de materia queremos crear una escena 3d con una nave espacial en el espacio, donde como animación se tengan estrellas que esten pasando por las nave, y que la nave se pueda mover arriba y abajo con las teclas.
